@@ -14,6 +14,7 @@ import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
 
 @Component({
@@ -29,11 +30,7 @@ import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
   ],
 })
 export class NgxMatMultiSelectComponent<T>
-  implements
-    ControlValueAccessor,
-    MatFormFieldControl<NgxMultiSelectItem<T>[]>,
-    OnInit,
-    OnDestroy
+  implements ControlValueAccessor, MatFormFieldControl<T[]>, OnInit, OnDestroy
 {
   @Input()
   public get disabled(): boolean {
@@ -74,7 +71,7 @@ export class NgxMatMultiSelectComponent<T>
 
   public static nextId = 0;
 
-  public value: NgxMultiSelectItem<T>[] = [];
+  public value: T[] = [];
 
   public get focused(): boolean {
     return this._focused;
@@ -87,7 +84,6 @@ export class NgxMatMultiSelectComponent<T>
 
   public touched = false;
 
-  public onChange = () => {};
   public onTouched = () => {};
 
   public get empty() {
@@ -150,8 +146,12 @@ export class NgxMatMultiSelectComponent<T>
     this.focused = isOpened;
   }
 
-  public registerOnChange(fn: any): void {
-    this.onChange = fn;
+  public registerOnChange(onChange: (value: T[]) => void): void {
+    this.subscriptions.add(
+      this.multiSelectControl.valueChanges
+        .pipe(startWith(this.multiSelectControl.value))
+        .subscribe((value) => onChange(value))
+    );
   }
 
   public registerOnTouched(fn: any): void {
