@@ -1,7 +1,10 @@
+import { FocusMonitor } from '@angular/cdk/a11y';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostBinding,
   Input,
   OnDestroy,
@@ -16,6 +19,9 @@ import { MatSelect } from '@angular/material/select';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
+import { observeProperty } from './utils/observe-property';
+
+const OVERLAY_PANEL_Y_OFFSET = 30;
 
 @Component({
   selector: 'ngx-mat-multi-select',
@@ -30,7 +36,12 @@ import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
   ],
 })
 export class NgxMatMultiSelectComponent<T>
-  implements ControlValueAccessor, MatFormFieldControl<T[]>, OnInit, OnDestroy
+  implements
+    ControlValueAccessor,
+    MatFormFieldControl<T[]>,
+    OnInit,
+    AfterViewInit,
+    OnDestroy
 {
   @Input()
   public get disabled(): boolean {
@@ -118,11 +129,25 @@ export class NgxMatMultiSelectComponent<T>
 
   private readonly subscriptions = new Subscription();
 
-  constructor(@Optional() @Self() public ngControl: NgControl) {
+  constructor(
+    private readonly focusMonitor: FocusMonitor,
+    private readonly elementRef: ElementRef,
+    @Optional() @Self() public ngControl: NgControl
+  ) {
     if (this.ngControl) {
       // Setting the value accessor directly (instead of using the providers) to avoid running into a circular import.
       this.ngControl.valueAccessor = this;
     }
+
+    this.subscriptions.add(
+      this.focusMonitor
+        .monitor(this.elementRef.nativeElement, true)
+        .subscribe((origin) => {
+          if (!this.disabled) {
+            this.focused = !!origin;
+          }
+        })
+    );
   }
 
   public ngOnInit(): void {
@@ -130,6 +155,18 @@ export class NgxMatMultiSelectComponent<T>
     this.options$ = this.optionsSubject.asObservable();
 
     this.subscriptions.add(this._syncSelectionOnOptionsUpdate());
+  }
+
+  public ngAfterViewInit(): void {
+    // Make sure that the overlay panel is always positioned directly below the form field. Angular Material does some weird automatic
+    // positioning that we wish to override. see https://github.com/angular/components/issues/14105
+    this.subscriptions.add(
+      observeProperty(this.matSelectRef, '_offsetY').subscribe((offsetY) => {
+        if (offsetY !== OVERLAY_PANEL_Y_OFFSET) {
+          this.matSelectRef._offsetY = OVERLAY_PANEL_Y_OFFSET;
+        }
+      })
+    );
   }
 
   public ngOnDestroy(): void {
@@ -148,7 +185,12 @@ export class NgxMatMultiSelectComponent<T>
   }
 
   public onSelectPanelToggle(isOpened: boolean): void {
-    this.focused = isOpened;
+    if (isOpened) {
+      this.matSelectRef.focus();
+      this.focused = true;
+    } else {
+      this.matSelectRef._onBlur();
+    }
   }
 
   public registerOnChange(onChange: (value: T[]) => void): void {
