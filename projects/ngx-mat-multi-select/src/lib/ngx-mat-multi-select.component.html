@@ -1,9 +1,11 @@
 <mat-select
-    #matSelect
-    multiple
-    [formControl]="multiSelectControl"
-    (openedChange)="onSelectPanelToggle($event)">
-    <mat-option *ngFor="let option of (options$ | async)" [value]="option.value">
-      {{ option.label }}
-    </mat-option>
+  #matSelect
+  multiple
+  [formControl]="multiSelectControl"
+  (openedChange)="onSelectPanelToggle($event)">
+  <ngx-mat-multi-select-options-header></ngx-mat-multi-select-options-header>
+
+  <mat-option *ngFor="let option of (options$ | async)" [value]="option.value">
+    {{ option.label }}
+  </mat-option>
 </mat-select>

@@ -19,6 +19,7 @@ import { MatSelect } from '@angular/material/select';
 import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
+import { NgxMultiSelectStateService } from './services/multi-select-state.service';
 import { observeProperty } from './utils/observe-property';
 
 const OVERLAY_PANEL_Y_OFFSET = 30;
@@ -33,6 +34,7 @@ const OVERLAY_PANEL_Y_OFFSET = 30;
       provide: MatFormFieldControl,
       useExisting: NgxMatMultiSelectComponent,
     },
+    NgxMultiSelectStateService,
   ],
 })
 export class NgxMatMultiSelectComponent<T>
@@ -134,6 +136,7 @@ export class NgxMatMultiSelectComponent<T>
   constructor(
     private readonly focusMonitor: FocusMonitor,
     private readonly elementRef: ElementRef,
+    private readonly multiSelectStateService: NgxMultiSelectStateService,
     @Optional() @Self() public ngControl: NgControl
   ) {
     if (this.ngControl) {
@@ -156,7 +159,14 @@ export class NgxMatMultiSelectComponent<T>
     this.stateChanges = this.stateChangesSubject.asObservable();
     this.options$ = this.optionsSubject.asObservable();
 
-    this.subscriptions.add(this._syncSelectionOnOptionsUpdate());
+    const combinedSubscriptions = [
+      this._syncSelectionOnOptionsUpdate(),
+      this._closeOptionsPanelListener(),
+    ];
+
+    combinedSubscriptions.forEach((subscription) =>
+      this.subscriptions.add(subscription)
+    );
   }
 
   public ngAfterViewInit(): void {
@@ -219,6 +229,12 @@ export class NgxMatMultiSelectComponent<T>
     if (value) {
       this.multiSelectControl.setValue(value);
     }
+  }
+
+  private _closeOptionsPanelListener(): Subscription {
+    return this.multiSelectStateService.optionsPanelClosed$.subscribe(() =>
+      this.matSelectRef.close()
+    );
   }
 
   private _syncSelectionOnOptionsUpdate(): Subscription {

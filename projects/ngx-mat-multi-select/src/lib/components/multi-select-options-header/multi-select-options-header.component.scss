@@ -1,0 +1,20 @@
+$options-header-border-color: #d6d6d6;
+
+$options-header-height: 48px;
+
+:host {
+  display: block;
+}
+
+.ngx-mat-multi-select-options-header {
+  border-bottom-color: $options-header-border-color;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  display: flex;
+  align-items: center;
+  height: $options-header-height;
+}
+
+.empty-space {
+  flex: 1;
+}
