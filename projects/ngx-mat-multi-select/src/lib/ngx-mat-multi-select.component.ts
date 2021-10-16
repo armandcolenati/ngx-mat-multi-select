@@ -88,7 +88,7 @@ export class NgxMatMultiSelectComponent<T>
   public value: T[] = [];
 
   public get focused(): boolean {
-    return this._focused;
+    return this._focused || this.isPanelOpened;
   }
   public set focused(focus: boolean) {
     this._focused = focus;
@@ -122,6 +122,8 @@ export class NgxMatMultiSelectComponent<T>
   @HostBinding()
   public readonly id = `ngx-mat-multi-select-${NgxMatMultiSelectComponent.nextId++}`;
 
+  private isPanelOpened = false;
+
   private readonly optionsSubject = new ReplaySubject<NgxMultiSelectItem<T>[]>(
     1
   );
@@ -143,7 +145,7 @@ export class NgxMatMultiSelectComponent<T>
       this.focusMonitor
         .monitor(this.elementRef.nativeElement, true)
         .subscribe((origin) => {
-          if (!this.disabled) {
+          if (!this.disabled && !(origin === 'mouse' || origin === 'touch')) {
             this.focused = !!origin;
           }
         })
@@ -170,6 +172,8 @@ export class NgxMatMultiSelectComponent<T>
   }
 
   public ngOnDestroy(): void {
+    this.focusMonitor.stopMonitoring(this.elementRef.nativeElement);
+
     this.optionsSubject.complete();
     this.stateChangesSubject.complete();
 
@@ -185,6 +189,8 @@ export class NgxMatMultiSelectComponent<T>
   }
 
   public onSelectPanelToggle(isOpened: boolean): void {
+    this.isPanelOpened = isOpened;
+
     if (isOpened) {
       this.matSelectRef.focus();
       this.focused = true;
