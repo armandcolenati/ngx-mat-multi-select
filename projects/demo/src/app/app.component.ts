@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { NgxMultiSelectItem } from 'projects/ngx-mat-multi-select/src/lib/models/ngx-multi-select-item.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 const DEFAULT_OPTIONS: NgxMultiSelectItem<string>[] = [
   {
@@ -38,17 +38,30 @@ export class AppComponent implements OnInit, OnDestroy {
   public options$!: Observable<NgxMultiSelectItem<string>[]>;
 
   public readonly multiSelectControl = new FormControl();
+  public readonly disableMultiSelectControl = new FormControl(false);
 
   private readonly optionsSubject = new BehaviorSubject<
     NgxMultiSelectItem<string>[]
   >(DEFAULT_OPTIONS);
 
+  private readonly subscriptions = new Subscription();
+
   public ngOnInit(): void {
     this.options$ = this.optionsSubject.asObservable();
+
+    this.subscriptions.add(
+      this.disableMultiSelectControl.valueChanges.subscribe((disableControl) =>
+        disableControl
+          ? this.multiSelectControl.disable()
+          : this.multiSelectControl.enable()
+      )
+    );
   }
 
   public ngOnDestroy(): void {
     this.optionsSubject.complete();
+
+    this.subscriptions.unsubscribe();
   }
 
   public onAddOptionClick(checked: boolean): void {

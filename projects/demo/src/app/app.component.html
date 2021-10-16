@@ -9,4 +9,6 @@
 
 <button mat-button mat-raised-button color="primary" (click)="onForceSelectionClick()">Force selection (option 2)</button>
 
+<div><mat-checkbox color="primary" [formControl]="disableMultiSelectControl">Disable control</mat-checkbox></div>
+
 <pre>{{ multiSelectControl.value | json }}</pre>

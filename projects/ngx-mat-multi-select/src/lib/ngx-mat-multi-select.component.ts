@@ -38,6 +38,9 @@ export class NgxMatMultiSelectComponent<T>
   }
   public set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
+    this._disabled
+      ? this.multiSelectControl.disable()
+      : this.multiSelectControl.enable();
     this.stateChangesSubject.next();
   }
   private _disabled = false;
@@ -139,7 +142,9 @@ export class NgxMatMultiSelectComponent<T>
   setDescribedByIds(ids: string[]): void {}
 
   public onContainerClick(): void {
-    this.matSelectRef.open();
+    if (!this.disabled) {
+      this.matSelectRef.open();
+    }
   }
 
   public onSelectPanelToggle(isOpened: boolean): void {
