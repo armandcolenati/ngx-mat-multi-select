@@ -37,23 +37,14 @@ const OVERLAY_PANEL_Y_OFFSET = 30;
     NgxMultiSelectStateService,
   ],
 })
-export class NgxMatMultiSelectComponent<T>
-  implements
-    ControlValueAccessor,
-    MatFormFieldControl<T[]>,
-    OnInit,
-    AfterViewInit,
-    OnDestroy
-{
+export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatFormFieldControl<T[]>, OnInit, AfterViewInit, OnDestroy {
   @Input()
   public get disabled(): boolean {
     return this._disabled;
   }
   public set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
-    this._disabled
-      ? this.multiSelectControl.disable()
-      : this.multiSelectControl.enable();
+    this._disabled ? this.multiSelectControl.disable() : this.multiSelectControl.enable();
     this.stateChangesSubject.next();
   }
   private _disabled = false;
@@ -126,9 +117,7 @@ export class NgxMatMultiSelectComponent<T>
 
   private isPanelOpened = false;
 
-  private readonly optionsSubject = new ReplaySubject<NgxMultiSelectItem<T>[]>(
-    1
-  );
+  private readonly optionsSubject = new ReplaySubject<NgxMultiSelectItem<T>[]>(1);
   private readonly stateChangesSubject = new Subject<void>();
 
   private readonly subscriptions = new Subscription();
@@ -145,13 +134,11 @@ export class NgxMatMultiSelectComponent<T>
     }
 
     this.subscriptions.add(
-      this.focusMonitor
-        .monitor(this.elementRef.nativeElement, true)
-        .subscribe((origin) => {
-          if (!this.disabled && !(origin === 'mouse' || origin === 'touch')) {
-            this.focused = !!origin;
-          }
-        })
+      this.focusMonitor.monitor(this.elementRef.nativeElement, true).subscribe((origin) => {
+        if (!this.disabled && !(origin === 'mouse' || origin === 'touch')) {
+          this.focused = !!origin;
+        }
+      })
     );
   }
 
@@ -159,14 +146,9 @@ export class NgxMatMultiSelectComponent<T>
     this.stateChanges = this.stateChangesSubject.asObservable();
     this.options$ = this.optionsSubject.asObservable();
 
-    const combinedSubscriptions = [
-      this._syncSelectionOnOptionsUpdate(),
-      this._closeOptionsPanelListener(),
-    ];
+    const combinedSubscriptions = [this._syncSelectionOnOptionsUpdate(), this._closeOptionsPanelListener()];
 
-    combinedSubscriptions.forEach((subscription) =>
-      this.subscriptions.add(subscription)
-    );
+    combinedSubscriptions.forEach((subscription) => this.subscriptions.add(subscription));
   }
 
   public ngAfterViewInit(): void {
@@ -211,9 +193,7 @@ export class NgxMatMultiSelectComponent<T>
 
   public registerOnChange(onChange: (value: T[]) => void): void {
     this.subscriptions.add(
-      this.multiSelectControl.valueChanges
-        .pipe(startWith(this.multiSelectControl.value))
-        .subscribe((value) => onChange(value))
+      this.multiSelectControl.valueChanges.pipe(startWith(this.multiSelectControl.value)).subscribe((value) => onChange(value))
     );
   }
 
@@ -232,16 +212,12 @@ export class NgxMatMultiSelectComponent<T>
   }
 
   private _closeOptionsPanelListener(): Subscription {
-    return this.multiSelectStateService.optionsPanelClosed$.subscribe(() =>
-      this.matSelectRef.close()
-    );
+    return this.multiSelectStateService.optionsPanelClosed$.subscribe(() => this.matSelectRef.close());
   }
 
   private _syncSelectionOnOptionsUpdate(): Subscription {
     return this.optionsSubject.subscribe((options) => {
-      const checkedOptions = options
-        .filter((option) => option.checked)
-        .map((option) => option.value);
+      const checkedOptions = options.filter((option) => option.checked).map((option) => option.value);
       this.multiSelectControl.setValue(checkedOptions);
     });
   }

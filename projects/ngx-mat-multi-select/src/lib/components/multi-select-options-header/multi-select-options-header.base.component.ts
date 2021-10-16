@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 import { NgxMultiSelectStateService } from '../../services/multi-select-state.service';
 
 @Component({
@@ -14,9 +9,7 @@ import { NgxMultiSelectStateService } from '../../services/multi-select-state.se
 export class NgxMatMultiSelectOptionsHeaderBaseComponent {
   @Output() public readonly optionsPanelClosed = new EventEmitter<void>();
 
-  constructor(
-    private readonly multiSelectStateService: NgxMultiSelectStateService
-  ) {}
+  constructor(private readonly multiSelectStateService: NgxMultiSelectStateService) {}
 
   public onCloseOptionsPanelClick(): void {
     this.multiSelectStateService.closeOptionsPanel();

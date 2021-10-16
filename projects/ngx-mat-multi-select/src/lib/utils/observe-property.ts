@@ -10,10 +10,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
  * @param   key    Key of the property that is to be observed.
  * @returns        A stream of all values that are assigned to the specified property, starting with the current value of the property.
  */
-export const observeProperty = <T, K extends keyof T>(
-  target: T,
-  key: K
-): Observable<T[K]> => {
+export const observeProperty = <T, K extends keyof T>(target: T, key: K): Observable<T[K]> => {
   interface GetAccessorWithValueStream {
     __value$?: Observable<T[K]>;
     (): T[K];
@@ -21,8 +18,7 @@ export const observeProperty = <T, K extends keyof T>(
 
   const propertyDescriptor = getPropertyDescriptor(target, key);
 
-  const originalGetAccessor: GetAccessorWithValueStream | undefined =
-    propertyDescriptor && propertyDescriptor.get; // eslint-disable-line @typescript-eslint/unbound-method
+  const originalGetAccessor: GetAccessorWithValueStream | undefined = propertyDescriptor && propertyDescriptor.get; // eslint-disable-line @typescript-eslint/unbound-method
 
   // If the specified property is already observed return the value stream that was previously created for this property.
   if (originalGetAccessor && originalGetAccessor.__value$) {
@@ -47,9 +43,7 @@ export const observeProperty = <T, K extends keyof T>(
         originalSetAccessor.call(target, newValue);
       }
 
-      const nextValue = originalGetAccessor
-        ? originalGetAccessor.call(target)
-        : newValue;
+      const nextValue = originalGetAccessor ? originalGetAccessor.call(target) : newValue;
 
       if (nextValue !== subject.getValue()) {
         subject.next(nextValue);
@@ -69,17 +63,12 @@ export const observeProperty = <T, K extends keyof T>(
  * @param key    Key of the property whose descriptor is to be retrieved.
  * @returns      The descriptor for the specified property or `undefined` if no such property exists on the target object.
  */
-const getPropertyDescriptor = (
-  target: any,
-  key: PropertyKey
-): PropertyDescriptor | undefined => {
+const getPropertyDescriptor = (target: any, key: PropertyKey): PropertyDescriptor | undefined => {
   if (target === null || target === undefined) {
     return undefined;
   }
 
   const descriptor = Object.getOwnPropertyDescriptor(target, key);
 
-  return descriptor !== undefined
-    ? descriptor
-    : getPropertyDescriptor(Object.getPrototypeOf(target), key);
+  return descriptor !== undefined ? descriptor : getPropertyDescriptor(Object.getPrototypeOf(target), key);
 };

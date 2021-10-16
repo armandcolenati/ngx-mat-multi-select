@@ -9,18 +9,8 @@ import { BolMultiselectOptionsHeaderComponent } from './components/multi-select-
 import { NgxMatMultiSelectComponent } from './ngx-mat-multi-select.component';
 
 @NgModule({
-  declarations: [
-    NgxMatMultiSelectComponent,
-    BolMultiselectOptionsHeaderComponent,
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatSelectModule,
-  ],
+  declarations: [NgxMatMultiSelectComponent, BolMultiselectOptionsHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatIconModule, MatSelectModule],
   exports: [NgxMatMultiSelectComponent],
 })
 export class NgxMatMultiSelectModule {}

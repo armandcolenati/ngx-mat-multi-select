@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { NgxMultiSelectItem } from 'projects/ngx-mat-multi-select/src/lib/models/ngx-multi-select-item.model';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
@@ -40,9 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public readonly multiSelectControl = new FormControl();
   public readonly disableMultiSelectControl = new FormControl(false);
 
-  private readonly optionsSubject = new BehaviorSubject<
-    NgxMultiSelectItem<string>[]
-  >(DEFAULT_OPTIONS);
+  private readonly optionsSubject = new BehaviorSubject<NgxMultiSelectItem<string>[]>(DEFAULT_OPTIONS);
 
   private readonly subscriptions = new Subscription();
 
@@ -51,9 +44,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.disableMultiSelectControl.valueChanges.subscribe((disableControl) =>
-        disableControl
-          ? this.multiSelectControl.disable()
-          : this.multiSelectControl.enable()
+        disableControl ? this.multiSelectControl.disable() : this.multiSelectControl.enable()
       )
     );
   }
