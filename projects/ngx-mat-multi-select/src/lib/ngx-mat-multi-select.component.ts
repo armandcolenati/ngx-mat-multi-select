@@ -52,7 +52,7 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
   @Input()
   public set options(options: NgxMultiSelectItem<T>[] | null) {
     if (options) {
-      this.optionsSubject.next(options);
+      this.multiSelectStateService.setOptions(options);
     }
   }
 
@@ -117,7 +117,6 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
 
   private isPanelOpened = false;
 
-  private readonly optionsSubject = new ReplaySubject<NgxMultiSelectItem<T>[]>(1);
   private readonly stateChangesSubject = new Subject<void>();
 
   private readonly subscriptions = new Subscription();
@@ -125,7 +124,7 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
   constructor(
     private readonly focusMonitor: FocusMonitor,
     private readonly elementRef: ElementRef,
-    private readonly multiSelectStateService: NgxMultiSelectStateService,
+    private readonly multiSelectStateService: NgxMultiSelectStateService<T>,
     @Optional() @Self() public ngControl: NgControl
   ) {
     if (this.ngControl) {
@@ -144,7 +143,7 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
 
   public ngOnInit(): void {
     this.stateChanges = this.stateChangesSubject.asObservable();
-    this.options$ = this.optionsSubject.asObservable();
+    this.options$ = this.multiSelectStateService.options$;
 
     const combinedSubscriptions = [this._syncSelectionOnOptionsUpdate(), this._closeOptionsPanelListener()];
 
@@ -166,7 +165,6 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
   public ngOnDestroy(): void {
     this.focusMonitor.stopMonitoring(this.elementRef.nativeElement);
 
-    this.optionsSubject.complete();
     this.stateChangesSubject.complete();
 
     this.subscriptions.unsubscribe();
@@ -216,7 +214,7 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
   }
 
   private _syncSelectionOnOptionsUpdate(): Subscription {
-    return this.optionsSubject.subscribe((options) => {
+    return this.multiSelectStateService.options$.subscribe((options) => {
       const checkedOptions = options.filter((option) => option.checked).map((option) => option.value);
       this.multiSelectControl.setValue(checkedOptions);
     });

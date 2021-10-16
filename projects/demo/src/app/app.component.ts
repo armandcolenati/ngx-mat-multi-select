@@ -68,6 +68,10 @@ export class AppComponent implements OnInit, OnDestroy {
     ]);
   }
 
+  public onClearOptionsClick(): void {
+    this.optionsSubject.next([]);
+  }
+
   public onForceSelectionClick(): void {
     this.multiSelectControl.setValue([DEFAULT_OPTIONS[1].value]);
   }

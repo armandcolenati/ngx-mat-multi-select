@@ -6,10 +6,10 @@ import { NgxMultiSelectStateService } from '../../services/multi-select-state.se
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NgxMatMultiSelectOptionsHeaderBaseComponent {
+export class NgxMatMultiSelectOptionsHeaderBaseComponent<T> {
   @Output() public readonly optionsPanelClosed = new EventEmitter<void>();
 
-  constructor(private readonly multiSelectStateService: NgxMultiSelectStateService) {}
+  constructor(private readonly multiSelectStateService: NgxMultiSelectStateService<T>) {}
 
   public onCloseOptionsPanelClick(): void {
     this.multiSelectStateService.closeOptionsPanel();
