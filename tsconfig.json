@@ -11,6 +11,12 @@
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
+    "paths": {
+      "ngx-mat-multi-select": [
+        "dist/ngx-mat-multi-select/ngx-mat-multi-select",
+        "dist/ngx-mat-multi-select"
+      ]
+    },
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,

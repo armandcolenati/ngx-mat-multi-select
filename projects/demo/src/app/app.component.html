@@ -1,0 +1,10 @@
+<mat-form-field appearance="fill">
+  <mat-label>Multi select</mat-label>
+  <ngx-mat-multi-select [formControl]="multiSelectControl" [options]="options$ | async"></ngx-mat-multi-select>
+</mat-form-field>
+
+<button mat-button mat-raised-button color="primary" (click)="onAddOptionClick(true)">Add checked option</button>
+
+<button mat-button mat-raised-button color="primary" (click)="onAddOptionClick(false)">Add unchecked option</button>
+
+<pre>{{ options$ | async | json }}</pre>
