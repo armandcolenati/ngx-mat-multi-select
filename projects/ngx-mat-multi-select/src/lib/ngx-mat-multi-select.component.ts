@@ -16,7 +16,7 @@ import {
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
-import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
 import { NgxMultiSelectStateService } from './services/multi-select-state.service';
@@ -26,8 +26,8 @@ const OVERLAY_PANEL_Y_OFFSET = 30;
 
 @Component({
   selector: 'ngx-mat-multi-select',
-  templateUrl: 'ngx-mat-multi-select.component.html',
-  styleUrls: ['ngx-mat-multi-select.component.scss'],
+  templateUrl: './ngx-mat-multi-select.component.html',
+  styleUrls: ['./ngx-mat-multi-select.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
@@ -38,47 +38,42 @@ const OVERLAY_PANEL_Y_OFFSET = 30;
   ],
 })
 export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatFormFieldControl<T[]>, OnInit, AfterViewInit, OnDestroy {
-  @Input()
-  public get disabled(): boolean {
+  @Input() public get disabled(): boolean {
     return this._disabled;
   }
   public set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
-    this._disabled ? this.multiSelectControl.disable() : this.multiSelectControl.enable();
+
+    if (this._disabled) {
+      this.multiSelectControl.disable();
+    } else {
+      this.multiSelectControl.enable();
+    }
+
     this.stateChangesSubject.next();
   }
-  private _disabled = false;
 
-  @Input()
-  public set options(options: NgxMultiSelectItem<T>[] | null) {
+  @Input() public set options(options: NgxMultiSelectItem<T>[] | null) {
     if (options) {
       this.multiSelectStateService.setOptions(options);
     }
   }
 
-  @Input()
-  public get placeholder(): string {
+  @Input() public get placeholder(): string {
     return this._placeholder;
   }
   public set placeholder(value: string) {
     this._placeholder = value;
     this.stateChangesSubject.next();
   }
-  private _placeholder = '';
 
-  @Input()
-  public get required(): boolean {
+  @Input() public get required(): boolean {
     return this._required;
   }
   public set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
     this.stateChangesSubject.next();
   }
-  private _required = false;
-
-  public static nextId = 0;
-
-  public value: T[] = [];
 
   public get focused(): boolean {
     return this._focused || this.isPanelOpened;
@@ -87,11 +82,20 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
     this._focused = focus;
     this.stateChangesSubject.next();
   }
-  private _focused = false;
+
+  public static nextId = 0;
+
+  @ViewChild('matSelect') public readonly matSelectRef!: MatSelect;
+
+  @HostBinding() public readonly id = `ngx-mat-multi-select-${NgxMatMultiSelectComponent.nextId++}`;
 
   public touched = false;
+  public value: T[] = [];
 
-  public onTouched = () => {};
+  public stateChanges!: Observable<void>;
+  public options$!: Observable<NgxMultiSelectItem<T>[]>;
+
+  public readonly multiSelectControl = new FormControl();
 
   public get empty() {
     return !this.multiSelectControl.value?.length;
@@ -105,16 +109,10 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
     return this.focused || !this.empty;
   }
 
-  public readonly multiSelectControl = new FormControl();
-
-  public stateChanges!: Observable<void>;
-  public options$!: Observable<NgxMultiSelectItem<T>[]>;
-
-  @ViewChild('matSelect') public readonly matSelectRef!: MatSelect;
-
-  @HostBinding()
-  public readonly id = `ngx-mat-multi-select-${NgxMatMultiSelectComponent.nextId++}`;
-
+  private _disabled = false;
+  private _focused = false;
+  private _placeholder = '';
+  private _required = false;
   private isPanelOpened = false;
 
   private readonly stateChangesSubject = new Subject<void>();
@@ -170,7 +168,9 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
     this.subscriptions.unsubscribe();
   }
 
-  setDescribedByIds(ids: string[]): void {}
+  public onTouched = () => {};
+
+  public setDescribedByIds(): void {}
 
   public onContainerClick(): void {
     if (!this.disabled) {

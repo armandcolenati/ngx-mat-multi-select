@@ -12,8 +12,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
  */
 export const observeProperty = <T, K extends keyof T>(target: T, key: K): Observable<T[K]> => {
   interface GetAccessorWithValueStream {
-    __value$?: Observable<T[K]>;
     (): T[K];
+    __value$?: Observable<T[K]>;
   }
 
   const propertyDescriptor = getPropertyDescriptor(target, key);

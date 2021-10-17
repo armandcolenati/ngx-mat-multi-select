@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-unassigned-import */
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
 import 'zone.js';
@@ -11,8 +13,8 @@ declare const require: {
     deep?: boolean,
     filter?: RegExp
   ): {
-    keys(): string[];
     <T>(id: string): T;
+    keys(): string[];
   };
 };
 
