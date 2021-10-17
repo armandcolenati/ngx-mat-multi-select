@@ -8,4 +8,4 @@ import { NgxMatMultiSelectOptionsHeaderBaseComponent } from './multi-select-opti
   styleUrls: ['./multi-select-options-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BolMultiselectOptionsHeaderComponent<T> extends NgxMatMultiSelectOptionsHeaderBaseComponent<T> {}
+export class NgxMatMultiSelectOptionsHeaderComponent<T> extends NgxMatMultiSelectOptionsHeaderBaseComponent<T> {}
