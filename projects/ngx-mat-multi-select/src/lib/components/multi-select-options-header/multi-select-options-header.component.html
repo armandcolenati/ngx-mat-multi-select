@@ -1,11 +1,18 @@
 <ng-container
   *ngIf="{
+    allSelected: (allSelected$ | async) || false,
     labels: labels$ | async,
-    options: (options$ | async) || []
+    options: (options$ | async) || [],
+    someSelected: (someSelected$ | async) || false
   } as headerData">
   <div class="ngx-mat-multi-select-options-header" *ngIf="headerData.options.length > 0">
     <div class="master-checkbox-container">
-      <mat-checkbox color="primary">{{ headerData.labels?.title }}</mat-checkbox>
+      <mat-checkbox
+        color="primary"
+        [checked]="headerData.allSelected"
+        [indeterminate]="headerData.someSelected">
+        {{ headerData.labels?.title }}
+      </mat-checkbox>
     </div>
   
     <button mat-icon-button (click)="onCloseOptionsPanelClick()">

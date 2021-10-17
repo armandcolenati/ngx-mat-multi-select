@@ -16,7 +16,7 @@ import {
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { defer, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
 import { NgxMultiSelectLabels } from './models/ngx-multi-select-labels.model';
@@ -102,7 +102,7 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
   public stateChanges!: Observable<void>;
   public options$!: Observable<NgxMultiSelectItem<T>[]>;
 
-  public readonly multiSelectControl = new FormControl();
+  public readonly multiSelectControl = new FormControl([]);
 
   public get empty() {
     return !this.multiSelectControl.value?.length;
@@ -121,6 +121,8 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
   private _placeholder = '';
   private _required = false;
   private isPanelOpened = false;
+
+  private multiSelectValue$!: Observable<T[]>;
 
   private readonly stateChangesSubject = new Subject<void>();
 
@@ -150,7 +152,16 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
     this.stateChanges = this.stateChangesSubject.asObservable();
     this.options$ = this.multiSelectStateService.options$;
 
-    const combinedSubscriptions = [this._syncSelectionOnOptionsUpdate(), this._closeOptionsPanelListener()];
+    this.multiSelectValue$ = merge(
+      defer(() => of(this.multiSelectControl.value)),
+      this.multiSelectControl.valueChanges
+    );
+
+    const combinedSubscriptions = [
+      this._syncSelectionOnOptionsUpdate(),
+      this._syncSelectedValuesWithService(),
+      this._closeOptionsPanelListener(),
+    ];
 
     combinedSubscriptions.forEach((subscription) => this.subscriptions.add(subscription));
   }
@@ -225,5 +236,9 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
       const checkedOptions = options.filter((option) => option.checked).map((option) => option.value);
       this.multiSelectControl.setValue(checkedOptions);
     });
+  }
+
+  private _syncSelectedValuesWithService(): Subscription {
+    return this.multiSelectValue$.subscribe((selectedValues) => this.multiSelectStateService.setSelectedValue(selectedValues));
   }
 }

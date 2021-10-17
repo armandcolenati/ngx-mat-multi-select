@@ -8,21 +8,25 @@ export class NgxMultiSelectStateService<T> implements OnDestroy {
   public labels$!: Observable<NgxMultiSelectLabels>;
   public options$!: Observable<NgxMultiSelectItem<T>[]>;
   public optionsPanelClosed$!: Observable<void>;
+  public selectedValues$!: Observable<T[]>;
 
   private readonly labelsSubject = new ReplaySubject<NgxMultiSelectLabels>(1);
   private readonly optionsSubject = new ReplaySubject<NgxMultiSelectItem<T>[]>(1);
   private readonly optionsPanelClosedSubject = new Subject<void>();
+  private readonly selectedValuesSubject = new ReplaySubject<T[]>();
 
   constructor() {
     this.labels$ = this.labelsSubject.asObservable();
     this.options$ = this.optionsSubject.asObservable();
     this.optionsPanelClosed$ = this.optionsPanelClosedSubject.asObservable();
+    this.selectedValues$ = this.selectedValuesSubject.asObservable();
   }
 
   public ngOnDestroy(): void {
     this.labelsSubject.complete();
     this.optionsSubject.complete();
     this.optionsPanelClosedSubject.complete();
+    this.selectedValuesSubject.complete();
   }
 
   public closeOptionsPanel(): void {
@@ -35,5 +39,9 @@ export class NgxMultiSelectStateService<T> implements OnDestroy {
 
   public setOptions(options: NgxMultiSelectItem<T>[]): void {
     this.optionsSubject.next(options);
+  }
+
+  public setSelectedValue(options: T[]): void {
+    this.selectedValuesSubject.next(options);
   }
 }
