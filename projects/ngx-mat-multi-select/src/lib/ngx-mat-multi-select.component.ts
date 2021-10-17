@@ -19,6 +19,7 @@ import { MatSelect } from '@angular/material/select';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { NgxMultiSelectItem } from './models/ngx-multi-select-item.model';
+import { NgxMultiSelectLabels } from './models/ngx-multi-select-labels.model';
 import { NgxMultiSelectStateService } from './services/multi-select-state.service';
 import { observeProperty } from './utils/observe-property';
 
@@ -51,6 +52,12 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
     }
 
     this.stateChangesSubject.next();
+  }
+
+  @Input() public set labels(labels: NgxMultiSelectLabels | null) {
+    if (labels) {
+      this.multiSelectStateService.setLabels(labels);
+    }
   }
 
   @Input() public set options(options: NgxMultiSelectItem<T>[] | null) {

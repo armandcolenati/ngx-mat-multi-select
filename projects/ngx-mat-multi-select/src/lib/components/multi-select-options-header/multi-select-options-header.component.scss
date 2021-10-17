@@ -1,6 +1,7 @@
 $options-header-border-color: #d6d6d6;
 
 $options-header-height: 48px;
+$master-checkbox-padding: 16px;
 
 :host {
   display: block;
@@ -15,6 +16,8 @@ $options-header-height: 48px;
   height: $options-header-height;
 }
 
-.empty-space {
+.master-checkbox-container {
+  font-weight: 700;
+  padding-left: $master-checkbox-padding;
   flex: 1;
 }

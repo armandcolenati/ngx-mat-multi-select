@@ -1,7 +1,15 @@
-<div class="ngx-mat-multi-select-options-header">
-  <div class="empty-space"></div>
-
-  <button mat-icon-button (click)="onCloseOptionsPanelClick()">
-    <mat-icon>close</mat-icon>
-  </button>
-</div>
+<ng-container
+  *ngIf="{
+    labels: labels$ | async,
+    options: (options$ | async) || []
+  } as headerData">
+  <div class="ngx-mat-multi-select-options-header" *ngIf="headerData.options.length > 0">
+    <div class="master-checkbox-container">
+      <mat-checkbox color="primary">{{ headerData.labels?.title }}</mat-checkbox>
+    </div>
+  
+    <button mat-icon-button (click)="onCloseOptionsPanelClick()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</ng-container>

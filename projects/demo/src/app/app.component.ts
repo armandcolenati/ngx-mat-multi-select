@@ -1,7 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { NgxMultiSelectItem } from 'projects/ngx-mat-multi-select/src/lib/models/ngx-multi-select-item.model';
+import { NgxMultiSelectLabels } from 'projects/ngx-mat-multi-select/src/lib/models/ngx-multi-select-labels.model';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+
+const DEFAULT_LABELS: NgxMultiSelectLabels = {
+  title: 'Options',
+};
 
 const DEFAULT_OPTIONS: NgxMultiSelectItem<string>[] = [
   {
@@ -25,16 +30,19 @@ const DEFAULT_OPTIONS: NgxMultiSelectItem<string>[] = [
 export class AppComponent implements OnInit, OnDestroy {
   public optionIndex = DEFAULT_OPTIONS.length;
 
+  public labels$!: Observable<NgxMultiSelectLabels>;
   public options$!: Observable<NgxMultiSelectItem<string>[]>;
 
   public readonly multiSelectControl = new FormControl();
   public readonly disableMultiSelectControl = new FormControl(false);
 
+  private readonly labelsSubject = new BehaviorSubject<NgxMultiSelectLabels>(DEFAULT_LABELS);
   private readonly optionsSubject = new BehaviorSubject<NgxMultiSelectItem<string>[]>(DEFAULT_OPTIONS);
 
   private readonly subscriptions = new Subscription();
 
   public ngOnInit(): void {
+    this.labels$ = this.labelsSubject.asObservable();
     this.options$ = this.optionsSubject.asObservable();
 
     this.subscriptions.add(
@@ -45,6 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.labelsSubject.complete();
     this.optionsSubject.complete();
 
     this.subscriptions.unsubscribe();
