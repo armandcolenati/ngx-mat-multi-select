@@ -14,11 +14,6 @@ const DEFAULT_OPTIONS: NgxMultiSelectItem<string>[] = [
     value: 'option-2',
     checked: true,
   },
-  {
-    label: 'Option 3',
-    value: 'option-3',
-    checked: true,
-  },
 ];
 
 @Component({
