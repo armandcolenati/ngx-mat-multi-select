@@ -160,6 +160,7 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
     const combinedSubscriptions = [
       this._syncSelectionOnOptionsUpdate(),
       this._syncSelectedValuesWithService(),
+      this._syncForcedSelectionToggle(),
       this._closeOptionsPanelListener(),
     ];
 
@@ -240,5 +241,9 @@ export class NgxMatMultiSelectComponent<T> implements ControlValueAccessor, MatF
 
   private _syncSelectedValuesWithService(): Subscription {
     return this.multiSelectValue$.subscribe((selectedValues) => this.multiSelectStateService.setSelectedValue(selectedValues));
+  }
+
+  private _syncForcedSelectionToggle(): Subscription {
+    return this.multiSelectStateService.forcedSelectionToggle$.subscribe((selection) => this.multiSelectControl.setValue(selection));
   }
 }

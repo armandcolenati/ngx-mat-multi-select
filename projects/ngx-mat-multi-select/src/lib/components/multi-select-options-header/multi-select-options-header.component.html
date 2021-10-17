@@ -10,7 +10,8 @@
       <mat-checkbox
         color="primary"
         [checked]="headerData.allSelected"
-        [indeterminate]="headerData.someSelected">
+        [indeterminate]="headerData.someSelected"
+        (change)="toggleMasterCheckboxSelection($event.checked)">
         {{ headerData.labels?.title }}
       </mat-checkbox>
     </div>
